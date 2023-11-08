@@ -1,0 +1,26 @@
+{
+  "realm" : "cirg",
+  "users" : [ {
+    "id" : "aff42289-6daa-493b-8eea-93da12607e5a",
+    "createdTimestamp" : 1699482706660,
+    "username" : "test",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "test",
+    "lastName" : "test",
+    "credentials" : [ {
+      "id" : "a21e9b91-ef43-4fad-b08c-d1ceeee77ac2",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1699482966626,
+      "secretData" : "{\"value\":\"KSU0rUDn0xsV+ij9UHFEP+WQkUFViZDPaSVRw3DXbn8=\",\"salt\":\"ylZxE60YnhGw5xtl00Xj/w==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-cirg" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
