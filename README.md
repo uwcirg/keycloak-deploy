@@ -96,7 +96,7 @@ Run dev server
 ```
 docker build . -t keycloak_dev
 
-docker run --name keycloak_dev -p 8080:8080 \
+docker run --name keycloak_dev -p 127.0.0.1:8080:8080 \
         -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
         -v ./dev-data/realm:/opt/keycloak/data/import \
         -v ./themes:/opt/keycloak/themes \
@@ -132,7 +132,7 @@ docker run --name keycloak_dev -p 8080:8080 \
 ---
 
 ### Related repositories
-Gitlab - from 2020
+Gitlab - from 2020 - deprecated
 Private repo
 - [Keyclock group](https://gitlab.cirg.washington.edu/keycloak)
   - [Keyclock themes](https://gitlab.cirg.washington.edu/keycloak/themes)
