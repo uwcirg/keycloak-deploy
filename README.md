@@ -10,7 +10,7 @@
 3. Build the container (only needed on the first time)
    - `docker build . -t keycloak_dev`
 4. Run the container
-   - `docker run --name keycloak_dev -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin -v ./dev-data/realm:/opt/keycloak/data/import  -v ./themes:/opt/keycloak/themes keycloak_dev`
+   - `docker run --name keycloak_dev -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin -v ./dev-data/init/realm:/opt/keycloak/data/import  -v ./modules/themes:/opt/keycloak/themes keycloak_dev`
 
 ### Testing your app login
 You can use this website to test your login functionality
@@ -25,15 +25,6 @@ Or directly via
   - Default user account for [user](http://localhost:8080/realms/cirg/account/#/)
     - User: test
     - Password: test
-
-## Repository structure
-
-If you are working on a theme, please focus on the `themes` directory.
-
-Your static files will be on `themes/theme_name/theme_type/resources`
-
-For instance if your theme is called `cirg` and you are working on a theme for the login page,
-The directory will be `themes/cirg/login/resources`
 
 ---
 
@@ -98,9 +89,60 @@ docker build . -t keycloak_dev
 
 docker run --name keycloak_dev -p 127.0.0.1:8080:8080 \
         -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
-        -v ./dev-data/realm:/opt/keycloak/data/import \
-        -v ./themes:/opt/keycloak/themes \
+        -v ./dev-data/init/realm:/opt/keycloak/data/import \
+        -v ./modules/themes:/opt/keycloak/themes \
         keycloak_dev
+```
+
+Use docker-compose to run the server
+(no build required)
+
+```
+docker compose up -d
+```
+
+Use the following command depending on your setup, if docker-compose is in your path
+
+```
+docker-compose up -d
+```
+
+---
+
+## Directory structure
+
+This repository is structured to facilitate efficient development workflows, 
+with directories designated for specific development purposes. Here's an overview of the key directories:
+
+### Modules Directory
+
+- **Structure**: Adheres to the `<module>/src/<main|test>/<language>` format.
+- **Example**: A Java module named `example` would have its main source code in `example/src/main/java`.
+
+### Themes Directory
+
+- **Location**: `modules/themes`
+- **Purpose**: Houses theme development files.
+- **Structure**: Follows `themes/<theme name>/<theme types>` format.
+- **Example**: `modules/themes/cirg/login` contains the login part sources for the `cirg` theme.
+
+### Development Data (dev-data) Directory
+
+- **Purpose**: Contains initial data for starting development containers.
+- **Location**: `dev-data/init`
+- **Contents**: Includes configuration files, database seeds, etc.
+
+### Backup Directory
+
+- **Location**: Inside the `dev-data` directory.
+- **Function**: Stores documentation on export/import variables and serves as a mount point (`/opt/keycloak/backup`) in containers.
+- **Configuration**: Refer to the example below for setting up the backup directory in Docker Compose.
+
+```yaml
+# Docker Compose setup example for the backup directory
+volumes:
+  backup:
+    # Configuration details here
 ```
 
 ---
