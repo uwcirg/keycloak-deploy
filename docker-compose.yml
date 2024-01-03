@@ -2,24 +2,28 @@ version: '3.7'
 
 services:
           keycloak:
-                build:
-                  context: .
+                image: quay.io/keycloak/keycloak:${KEYCLOAK_IMAGE_TAG:-22.0}
                 container_name: keycloak
                 restart: always
-                stop_grace_period: 1m  # Avoids interrupting the backup script
+                init: true
+                entrypoint: /opt/keycloak/sbin/entrypoint-wrapper.sh
                 environment:
                         -  KC_HOSTNAME=localhost
                         -  KEYCLOAK_ADMIN=admin
                         -  KEYCLOAK_ADMIN_PASSWORD=admin
                         -  KEYCLOAK_DEV_MODE=true
-                        -  KEYCLOAK_BACKUP_ON_SIGTERM=true
                         -  KEYCLOAK_STARTUP_IMPORT=true
+                        -  KEYCLOAK_BACKUP_RESTORE=false
+                        -  KEYCLOAK_BACKUP_ON_SIGTERM=true
+                        -  KEYCLOAK_BACKUP_DIR=/opt/keycloak/backup
+                        -  LOG4J_FORMAT_MSG_NO_LOOKUPS=true
                 ports:
                         - "8080:8080"
                 volumes:
-                        - ./dev-data/init/realm:/opt/keycloak/data/import
-                        - ./dev-data/backup:/opt/keycloak/backup
+                        - ./modules/system/src/main/sh/bin:/opt/keycloak/sbin
                         - ./modules/themes:/opt/keycloak/themes
+                        - ./data/import:/opt/keycloak/data/import
+                        - ./data/backup:/opt/keycloak/backup
                         - keycloak-data:/opt/keycloak/data
 volumes:
   keycloak-data:

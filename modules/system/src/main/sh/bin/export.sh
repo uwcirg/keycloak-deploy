@@ -1,31 +1,99 @@
 #!/bin/bash
 
-EXPORT_FILE="keycloak-export.json"
-FULL_EXPORT_PATH="$KEYCLOAK_BACKUP_DIR/$EXPORT_FILE"
+source /opt/keycloak/sbin/base.sh
 
-# KEYCLOAK_BACKUP_ON_SIGTERM is an custom environment variable designed for use in Dockerized Keycloak environments,
-# primarily for development purposes. It controls whether a script exports user data when a SIGTERM signal is received,
-# ensuring data persistence across restarts. However, this approach is not recommended for production due to scalability
-# and maintainability limitations.
-#
-# In production, database backups are preferred for their robustness and efficiency.
-# KEYCLOAK_BACKUP_ON_SIGTERM can serve as a transitional solution before adopting a database backup strategy,
-# especially in setups not yet equipped with comprehensive database backup systems.
-if [ "$KEYCLOAK_BACKUP_ON_SIGTERM" == true ]; then
-    echo "KEYCLOAK_BACKUP_ON_SIGTERM is set to 'true'. Proceeding with backup."
+ONLINE=true
 
-    # Create the backup directory if it doesn't exist
-    mkdir -p "$KEYCLOAK_BACKUP_DIR"
+show_help() {
+	echo  "Usage to export users: ${0##*/} [OPTIONS]"
+	echo
+	echo  "Options:"
+	echo  "  --offline   Run the script in offline mode."
+	echo  "  --help      Display this help message."
+}
 
-    # Export all realms
-    kc.sh export --dir "$KEYCLOAK_BACKUP_DIR" --file "$FULL_EXPORT_PATH"
+online_export() {
+	kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user "$KEYCLOAK_ADMIN" --password "$KEYCLOAK_ADMIN_PASSWORD"
 
-    # Check if export was successful
-    if [ -f "$FULL_EXPORT_PATH" ]; then
-        echo "Export successful. File created at: $FULL_EXPORT_PATH"
-    else
-        echo "Export failed. File not found: $FULL_EXPORT_PATH"
-    fi
+	echo  "Exporting all realms to $KEYCLOAK_BACKUP_DIR/$EXPORT_FILE"
+	kcadm.sh  get realms > $FULL_EXPORT_PATH
+
+	if  [ -f "$FULL_EXPORT_PATH" ]; then
+		echo     "Export successful. File created at: $FULL_EXPORT_PATH"
+	else
+		echo     "Export failed. File not found: $FULL_EXPORT_PATH"
+	fi
+}
+
+offline_export() {
+	kc.sh  export --dir "$KEYCLOAK_BACKUP_DIR" --file "$FULL_EXPORT_PATH"
+
+	if  [ -f "$FULL_EXPORT_PATH" ]; then
+		echo "Export successful. File created at: $FULL_EXPORT_PATH"
+	else
+		echo "Export failed. File not found: $FULL_EXPORT_PATH"
+	fi
+}
+
+check_requirements() {
+	local  missing_requirements=false
+
+	if  [ "$ONLINE" = true ]; then
+		if     [ -z "$KCADMIN" ]; then
+			echo        "warning: KCADMIN variable is not set."
+			missing_requirements=true
+		fi
+
+		if     [ -z "$KEYCLOAK_ADMIN" ]; then
+			echo        "warning: KEYCLOAK_ADMIN variable is not set."
+			missing_requirements=true
+		fi
+
+		if     [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
+			echo        "warning: KEYCLOAK_ADMIN_PASSWORD variable is not set."
+			missing_requirements=true
+		fi
+	fi
+
+	if  [ -z "$KEYCLOAK_BACKUP_DIR" ]; then
+		echo     "warning: KEYCLOAK_BACKUP_DIR variable is not set."
+		missing_requirements=true
+	elif  [ ! -d "$KEYCLOAK_BACKUP_DIR" ]; then
+		echo     "warning: Backup directory ($KEYCLOAK_BACKUP_DIR) does not exist."
+		missing_requirements=true
+	elif  [ ! -w "$KEYCLOAK_BACKUP_DIR" ]; then
+		echo     "warning: No write permission for the backup directory ($KEYCLOAK_BACKUP_DIR)."
+		missing_requirements=true
+	fi
+
+	if  [ "$missing_requirements" = true ]; then
+		echo     "One or more requirements are missing. Exiting script."
+		exit     1
+	fi
+}
+
+while [[ "$#" -gt 0 ]]; do
+	case "$1" in
+		--offline)     ONLINE=false ;;
+		--help)
+			show_help
+			exit                       0
+			;;
+		*)
+			echo       "Unknown option: $1" >&2
+			show_help
+			exit                                                 1
+			;;
+	esac
+	shift
+done
+
+mkdir -p "$KEYCLOAK_BACKUP_DIR"
+
+check_requirements
+
+if [ "$ONLINE" = true ]; then
+	online_export
 else
-    echo "KEYCLOAK_BACKUP_ON_SIGTERM is not set to 'true'. Skipping backup."
+	offline_export
 fi
