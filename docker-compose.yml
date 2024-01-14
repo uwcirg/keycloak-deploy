@@ -7,13 +7,6 @@ services:
                 restart: always
                 init: true
                 entrypoint: /opt/keycloak/sbin/entrypoint-wrapper.sh
-                environment:
-                        -  KEYCLOAK_ADMIN=admin
-                        -  KEYCLOAK_ADMIN_PASSWORD=admin
-                        -  KEYCLOAK_DEV_MODE=true
-                        -  KEYCLOAK_STARTUP_IMPORT=true
-                        -  KEYCLOAK_BACKUP_RESTORE=false
-                        -  KEYCLOAK_BACKUP_ON_SIGTERM=true
                 ports:
                         - "8080:8080"
                 volumes:
@@ -24,5 +17,7 @@ services:
                         - ./data/import:/opt/keycloak/data/import
                         - ./data/backup:/opt/keycloak/backup
                         - keycloak-data:/opt/keycloak/data
+                env_file:
+                        - keycloak.env
 volumes:
   keycloak-data:

@@ -47,7 +47,7 @@ graceful_shutdown() {
 		# especially in setups not yet equipped with comprehensive database backup systems.
 		if [ "$KEYCLOAK_BACKUP_ON_SIGTERM" == true ]; then
 			echo "KEYCLOAK_BACKUP_ON_SIGTERM is set to 'true'. Proceeding with backup."
-			bash "$EXPORT_USERS_SCRIPT --offline"
+			$EXPORT_USERS_SCRIPT --offline
 		else
 			echo "KEYCLOAK_BACKUP_ON_SIGTERM is not set to 'true'. Skipping backup."
 		fi
@@ -65,7 +65,7 @@ trap 'graceful_shutdown' SIGTERM
 if [ -f "$IMPORT_USERS_SCRIPT" ]; then
 	if      [ "$KEYCLOAK_BACKUP_RESTORE" == true ]; then
 		echo      "KEYCLOAK_BACKUP_RESTORE is set to 'true'. Restoring backup."
-		bash      "$IMPORT_USERS_SCRIPT --offline"
+		$IMPORT_USERS_SCRIPT --offline
 	else
 		echo "KEYCLOAK_BACKUP_RESTORE is not set to 'true'. Skipping startup backup restore."
 	fi
