@@ -5,12 +5,11 @@
 ## Steps to use this repository
 
 1. [Install docker](https://docs.docker.com/engine/install/debian/)
-2. Add your user to the docker group
+2. Install docker compose
+3. Add your user to the docker group
    - `sudo usermod -aG docker user_name`
-3. Build the container (only needed on the first time)
-   - `docker build . -t keycloak_dev`
-4. Run the container
-   - `docker run --name keycloak_dev -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin -v ./dev-data/init/realm:/opt/keycloak/data/import  -v ./modules/themes:/opt/keycloak/themes keycloak_dev`
+4. Run the container from the project root directory
+   - `docker compose up -d`
 
 ### Testing your app login
 You can use this website to test your login functionality
@@ -29,6 +28,9 @@ Or directly via
 ---
 
 ## Documentation
+ - [Importing and Exporting Realms](https://www.keycloak.org/server/importExport)
+ - [Creating a customized and optimized container image](https://www.keycloak.org/server/containers)
+ - [Configuring Keycloak for production](https://www.keycloak.org/server/configuration-production)
  - Main doc (log): [Google docs log](https://docs.google.com/document/d/1QVlPUxxprRUYIsNMxpmfGYB9xFuW1vks43U1r8zHCR4/edit?pli=1#heading=h.ygo9dgskih9a)
 
 ---
@@ -82,18 +84,6 @@ Add the docker group to the user if necessary
 
 ```sudo usermod -aG docker user_name```
 
-Run dev server
-
-```
-docker build . -t keycloak_dev
-
-docker run --name keycloak_dev -p 127.0.0.1:8080:8080 \
-        -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
-        -v ./dev-data/init/realm:/opt/keycloak/data/import \
-        -v ./modules/themes:/opt/keycloak/themes \
-        keycloak_dev
-```
-
 Use docker-compose to run the server
 (no build required)
 
@@ -107,7 +97,60 @@ Use the following command depending on your setup, if docker-compose is in your 
 docker-compose up -d
 ```
 
----
+### Import/Export commands
+These commands will import and export realms and users, while providing two main modes of operation.
+
+The recommended mode is **offline** in which KC will proceed with a direct approach based on `kc.sh`, assuming KC is stopped.
+
+Along with **KEYCLOAK_BACKUP_ON_SIGTERM** set to true, the *offline* mode will stop KC before proceeding and follow a direct approach with `kc.sh`. 
+
+This recommendation came from the simplicity of this operation, while increasing safety and consistency. Please note
+[Importing and Exporting Realms](https://www.keycloak.org/server/importExport).
+
+The import command in the offline mode will not request the server to stop, as it is meant to run before it starts.
+
+The other mode will use the API to import/export data, being more complex in consideration of concerns like cache and data format.
+
+Export users while the container is up and needs to keep running
+```
+docker compose exec keycloak /opt/keycloak/sbin/export.sh
+```
+
+Export users while the container is up/down and needs to stop
+```
+docker compose exec keycloak /opt/keycloak/sbin/export.sh --offline
+```
+
+Import users while the container is up and needs to keep running
+```
+docker compose exec keycloak /opt/keycloak/sbin/import.sh 
+```
+
+Import users while the container is up/down and needs to stop
+```
+docker compose exec keycloak /opt/keycloak/sbin/import.sh --offline
+```
+
+## Environment Variables for data export/import
+
+Three key environment variables control the behavior of the backup and restore processes:
+
+1. **KEYCLOAK_BACKUP_ON_SIGTERM**:
+    - This variable, when set to `true`, activates the backup process upon receiving a SIGTERM signal (typically during a container shutdown).
+    - If enabled, the script responsible for handling the SIGTERM signal will trigger an export of Keycloak data, storing it in this backup directory.
+    - Usage scenario: Primarily used in development environments for preserving data across container restarts or redeployments.
+
+2. **KEYCLOAK_BACKUP_RESTORE**:
+    - When set to `true`, this variable enables the restoration of Keycloak data from the backup directory at the startup of the Keycloak container.
+    - If enabled, a script will import data from the backup files located in this directory into Keycloak during the container's initialization process.
+    - Usage scenario: Useful for initializing Keycloak with pre-existing data, especially after a fresh deployment or in development/testing environments.
+
+3. **KEYCLOAK_STARTUP_IMPORT**:
+    - When set to `true`, KC will start with "--import-realm". This will ask KC to import the data from `/opt/keycloak/data/import` during the initial stages of the boot process.
+    - This process can import data created by the offline mode provided by the export script or by kc.sh.
+
+All variables default to false, and they can be used if needed, otherwise,
+the backup command options should be enough for manual operations.
 
 ## Directory structure
 
@@ -126,16 +169,23 @@ with directories designated for specific development purposes. Here's an overvie
 - **Structure**: Follows `themes/<theme name>/<theme types>` format.
 - **Example**: `modules/themes/cirg/login` contains the login part sources for the `cirg` theme.
 
-### Development Data (dev-data) Directory
+### Themes Directory
+
+- **Location**: `lib`
+- **Purpose**: Houses additional libraries that might be needed.
+- **Structure**: Follows `lib/<library name>` format.
+- **Example**: `lib/groovy`.
+
+### Development data Directory
 
 - **Purpose**: Contains initial data for starting development containers.
-- **Location**: `dev-data/init`
+- **Location**: `data/import`
 - **Contents**: Includes configuration files, database seeds, etc.
 
 ### Backup Directory
 
-- **Location**: Inside the `dev-data` directory.
-- **Function**: Stores documentation on export/import variables and serves as a mount point (`/opt/keycloak/backup`) in containers.
+- **Purpose**: Stores backup data created for export/import routines and serves as a mount point for (`/opt/keycloak/backup`).
+- **Location**: `data/backup`
 - **Configuration**: Refer to the example below for setting up the backup directory in Docker Compose.
 
 ```yaml
@@ -188,3 +238,7 @@ Public repo
   - [compose](https://github.com/uwcirg/dcw-environments/blob/main/dev/docker-compose.yaml)
 - [helloworld-environments](https://github.com/uwcirg/helloworld-environments)
   - The "dcw" and "cosri" systems were intended to extend this.
+
+Github - from 2024
+Public repo
+- [ltt-environments](https://github.com/uwcirg/ltt-environments/blob/main/dev/docker-compose.yaml)

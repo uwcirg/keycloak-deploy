@@ -13,25 +13,38 @@ show_help() {
 }
 
 online_export() {
-	kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user "$KEYCLOAK_ADMIN" --password "$KEYCLOAK_ADMIN_PASSWORD"
+	kcadm.sh config credentials --server http://localhost:8080 --realm master --user "$KEYCLOAK_ADMIN" --password "$KEYCLOAK_ADMIN_PASSWORD"
 
-	echo  "Exporting all realms to $KEYCLOAK_BACKUP_DIR/$EXPORT_FILE"
-	kcadm.sh  get realms > $FULL_EXPORT_PATH
+	echo  "Exporting all realms and users to $KEYCLOAK_BACKUP_DIR"
 
-	if  [ -f "$FULL_EXPORT_PATH" ]; then
-		echo     "Export successful. File created at: $FULL_EXPORT_PATH"
+	realms=$(kcadm.sh get realms | grep -o '"realm" *: *"[^"]*' | grep -o '[^"]*$')
+
+	for realm in $realms; do
+	    # Export realm configuration
+	    realm_file="$KEYCLOAK_BACKUP_DIR/${realm}-realm.json"
+	    kcadm.sh get realms/$realm > "$realm_file"
+	    echo "Exported realm configuration to $realm_file"
+
+	    # Export users for the realm
+	    users_file="$KEYCLOAK_BACKUP_DIR/${realm}-users.json"
+	    kcadm.sh get users -r "$realm" > "$users_file"
+	    echo "Exported users for realm $realm to $users_file"
+        done
+
+	if  [ -f "$BACKUP_FILE_REALMS_PATH" ]; then
+		echo     "Realm export successful. File created at: $BACKUP_FILE_REALMS_PATH"
 	else
-		echo     "Export failed. File not found: $FULL_EXPORT_PATH"
+		echo     "Realm Export failed. File not found: $BACKUP_FILE_REALMS_PATH"
 	fi
 }
 
 offline_export() {
-	kc.sh  export --dir "$KEYCLOAK_BACKUP_DIR" --file "$FULL_EXPORT_PATH"
+	kc.sh  export --dir "$KEYCLOAK_BACKUP_DIR" --file "$BACKUP_FILE_REALMS_PATH"
 
-	if  [ -f "$FULL_EXPORT_PATH" ]; then
-		echo "Export successful. File created at: $FULL_EXPORT_PATH"
+	if  [ -f "$BACKUP_FILE_REALMS_PATH" ]; then
+		echo "Export successful. File created at: $BACKUP_FILE_REALMS_PATH"
 	else
-		echo "Export failed. File not found: $FULL_EXPORT_PATH"
+		echo "Export failed. File not found: $BACKUP_FILE_REALMS_PATH"
 	fi
 }
 

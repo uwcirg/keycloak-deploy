@@ -13,27 +13,39 @@ show_help() {
 }
 
 online_import() {
-	if  [ -z "$KEYCLOAK_BACKUP_DIR" ]; then
-		echo     "warning: No import directory specified. Set the KEYCLOAK_BACKUP_DIR variable to the path of the directory to import."
-		return     1
-	fi
 
-	if  [ ! -d "$KEYCLOAK_BACKUP_DIR" ]; then
-		echo     "warning: Import directory ($KEYCLOAK_BACKUP_DIR) not found."
-		return     1
-	fi
+    kcadm.sh config credentials --server http://localhost:8080 --realm master --user "$KEYCLOAK_ADMIN" --password "$KEYCLOAK_ADMIN_PASSWORD"
 
-	kcadm.sh  config credentials --server http://localhost:8080/auth --realm master --user "$KEYCLOAK_ADMIN" --password "$KEYCLOAK_ADMIN_PASSWORD"
+    echo "Importing all realms and users from $KEYCLOAK_BACKUP_DIR"
 
-	echo  "Importing data from directory $KEYCLOAK_BACKUP_DIR"
-	kcadm.sh  import --dir "$KEYCLOAK_BACKUP_DIR"
+    for realm_file in "$KEYCLOAK_BACKUP_DIR"/*-realm.json; do
+        [ -e "$realm_file" ] || continue  # skip if no files found
 
-	if  [ $? -eq 0 ]; then
-		echo     "Data import from directory successful."
-	else
-		echo     "Data import from directory failed."
-	fi
+        realm=$(basename "$realm_file" -realm.json)
+
+        echo "Importing realm from $realm_file"
+        kcadm.sh update "realms/$realm" -f "$realm_file"
+
+        users_file="$KEYCLOAK_BACKUP_DIR/${realm}-users.json"
+        if [ -f "$users_file" ]; then
+	    while IFS= read -r user; do
+		username=$(echo "$user" | grep -o '"username":"[^"]*' | cut -d '"' -f 4)
+		user_id=$(echo "$user" | grep -o '"id":"[^"]*' | cut -d '"' -f 4)
+
+		if [ -n "$user_id" ]; then
+		    echo "Updating user $username in realm $realm"
+		    echo "$user" | kcadm.sh update users/$user_id -r "$realm" -f -
+		else
+		    echo "Creating user $username in realm $realm"
+		    echo "$user" | kcadm.sh create users -r "$realm" -f -
+		fi
+	    done < <(/opt/keycloak/sbin/groovy/users/parseUsers.groovy "$users_file")
+        else
+            echo "User file for realm $realm not found: $users_file"
+        fi
+    done
 }
+
 
 offline_import() {
 	if  [ -z "$(ls $KEYCLOAK_BACKUP_DIR/*.json 2>/dev/null)"  ]; then

@@ -6,7 +6,7 @@ This directory is part of a Keycloak deployment configured for automated backup 
 
 ## Environment Variables
 
-Two key environment variables control the behavior of the backup and restore processes:
+Three key environment variables control the behavior of the backup and restore processes:
 
 1. **KEYCLOAK_BACKUP_ON_SIGTERM**:
     - This variable, when set to `true`, activates the backup process upon receiving a SIGTERM signal (typically during a container shutdown).
@@ -17,6 +17,13 @@ Two key environment variables control the behavior of the backup and restore pro
     - When set to `true`, this variable enables the restoration of Keycloak data from the backup directory at the startup of the Keycloak container.
     - If enabled, a script will import data from the backup files located in this directory into Keycloak during the container's initialization process.
     - Usage scenario: Useful for initializing Keycloak with pre-existing data, especially after a fresh deployment or in development/testing environments.
+
+3. **KEYCLOAK_STARTUP_IMPORT**:
+    - When set to `true`, KC will start with "--import-realm". This will ask KC to import the data from `/opt/keycloak/data/import` during the initial stages of the boot process.
+    - This process can import data created by the offline mode provided by the export script or by kc.sh.
+
+All variables default to false, and they can be used if needed, otherwise,
+the backup command options should be enough for manual operations.
 
 ## Directory Structure
 

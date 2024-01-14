@@ -8,19 +8,18 @@ services:
                 init: true
                 entrypoint: /opt/keycloak/sbin/entrypoint-wrapper.sh
                 environment:
-                        -  KC_HOSTNAME=localhost
                         -  KEYCLOAK_ADMIN=admin
                         -  KEYCLOAK_ADMIN_PASSWORD=admin
                         -  KEYCLOAK_DEV_MODE=true
                         -  KEYCLOAK_STARTUP_IMPORT=true
                         -  KEYCLOAK_BACKUP_RESTORE=false
                         -  KEYCLOAK_BACKUP_ON_SIGTERM=true
-                        -  KEYCLOAK_BACKUP_DIR=/opt/keycloak/backup
-                        -  LOG4J_FORMAT_MSG_NO_LOOKUPS=true
                 ports:
                         - "8080:8080"
                 volumes:
                         - ./modules/system/src/main/sh/bin:/opt/keycloak/sbin
+                        - ./modules/system/src/main/groovy:/opt/keycloak/sbin/groovy
+                        - ./lib/groovy:/opt/groovy
                         - ./modules/themes:/opt/keycloak/themes
                         - ./data/import:/opt/keycloak/data/import
                         - ./data/backup:/opt/keycloak/backup
