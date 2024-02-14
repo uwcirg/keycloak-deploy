@@ -15,11 +15,5 @@ export KEYCLOAK_BACKUP_DIR="/opt/keycloak/backup"
 export BACKUP_FILE_REALMS="realms.json"
 export BACKUP_FILE_REALMS_PATH="$KEYCLOAK_BACKUP_DIR/$BACKUP_FILE_REALMS"
 
-export KC_HOSTNAME=localhost
-export KC_HTTP_ENABLED=true
-export KC_HOSTNAME_STRICT_HTTPS=false
-export KC_HOSTNAME_STRICT=false
-export KC_PROXY=edge
-
 export JAVA_HOME="/usr/lib/jvm/jre"
 export GROOVY_HOME="/opt/groovy"
