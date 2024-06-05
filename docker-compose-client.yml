@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+          keycloak:
+                image: quay.io/keycloak/keycloak:${KEYCLOAK_IMAGE_TAG:-23.0}
+                container_name: keycloak
+                init: true
+                entrypoint: /opt/keycloak/sbin/entrypoint-wrapper.sh
+                ports:
+                        - "8080:8080"
+                volumes:
+                        - ./modules/system/src/main/sh/bin:/opt/keycloak/sbin
+                        - ./modules/system/src/main/groovy:/opt/keycloak/sbin/groovy
+                        - ./lib/groovy:/opt/groovy
+                        - ./modules/themes:/opt/keycloak/themes
+                        - ./data/import:/opt/keycloak/data/import
+                        - ./data/backup:/opt/keycloak/backup
+                        - keycloak-data:/opt/keycloak/data
+                env_file:
+                        - keycloak.env
+          client:
+                image: liferay/portal:7.4.3.102-ga102
+                ports:
+                  - "8081:8080"
+volumes:
+  keycloak-data:

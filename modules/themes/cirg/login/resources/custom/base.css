@@ -1,0 +1,13 @@
+html {
+	width: 100vw;
+	height: 100vh;
+	position: relative;
+}
+
+body {
+	height: 100%;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
