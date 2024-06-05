@@ -1,51 +1,42 @@
-#header {
-	position: fixed;
-	z-index: 10000;
-	left: 0;
-	top: 0;
-	width: 100%;
-	background: rgba(255, 255, 255, 0.95);
-	line-height: 3em;
-	box-shadow: 0 0 0.15em 0 rgba(0, 0, 0, 0.1);
-	margin-bottom: 1em;
-	display: flex;
-	align-items: center;
-	height: 4em;
-}
-
-#header img {
-    height: 2.5em;
-    padding-left: 1em;
-}
-
-#kc-header img {
-    max-width: 600px;
-}
-
-#kc-header {
-    margin-top: 4em;
-}
-
-.login-pf-page {
-	background: url("img/overlay.png"), url("../img/cherry.jpg");
+.login-page {
+	background: url("../img/overlay.png"), url("../img/cherry.jpg");
 	background-size: 256px 256px, cover;
 	background-attachment: fixed, fixed;
 	background-position: top left, bottom center;
 	background-repeat: repeat, no-repeat;
 	height: 100%;
+	color: #fff;
 }
 
-h1, h2, h3, h4, h5, h6 {
-	font-weight: 900;
-	color: inherit;
-	letter-spacing: -0.0325em;
+.kc-login-form {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: calc(100vh - var(--header-height));
+	color: black;
 }
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+.kc-login-form .kc-header-form {
+	padding: 1.5rem !important;
 }
+
+.kc-login-form .kc-header-form > .h1, .kc-login-form .kc-header-form > h1 {
+	font-size: 1.5rem;
+	text-align: center;
+	padding-top: 0.7rem;
+}
+
+.kc-login-form #kc-content {
+	padding: 1.5rem !important;
+}
+
+@media (min-width: 1200px) {
+	.kc-login-form > .card {
+		min-width: 600px;
+	}
+}
+
+.kc-login-tooltip, .kc-login-tooltip * {
+	color: #fff !important;
+}
+

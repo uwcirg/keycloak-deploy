@@ -1,0 +1,33 @@
+#header {
+	position: relative;
+	z-index: 10000;
+	width: 100%;
+	background: var(--header-bg-color);
+	line-height: 3em;
+	box-shadow: 0 0 0.15em 0 rgba(0, 0, 0, 0.1);
+	margin-bottom: 1em;
+	display: flex;
+	align-items: center;
+	height: var(--header-height);
+	justify-content: center;
+	padding: 1em;
+}
+
+#header img {
+	height: 2.5em;
+}
+
+#kc-header {
+	margin-top: var(--header-height);
+	text-align: center;
+	background-color: white;
+	width: 100%;
+	max-width: 500px;
+	padding: 1em;
+	box-shadow: 0 0 0.15em 0 rgba(0, 0, 0, 0.1);
+}
+
+#kc-header img {
+	max-width: 100%;
+	height: auto;
+}
