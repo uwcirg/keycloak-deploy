@@ -22,6 +22,12 @@
 			</#list>
 		</#if>
 
+		<#if properties.customStyles?has_content>
+			<#list properties.customStyles?split(' ') as style>
+				<link href="${url.resourcesPath}/${style}" rel="stylesheet"/>
+			</#list>
+		</#if>
+
 		<#if properties.scripts?has_content>
 			<#list properties.scripts?split(' ') as script>
 				<script src="${url.resourcesPath}/${script}" type="text/javascript"></script>
@@ -33,18 +39,12 @@
 				<script src="${script}" type="text/javascript"></script>
 			</#list>
 		</#if>
-
-		<link href="${url.resourcesPath}/custom/variables.css" rel="stylesheet"/>
-		<link href="${url.resourcesPath}/custom/colors.css" rel="stylesheet"/>
-		<link href="${url.resourcesPath}/custom/base.css" rel="stylesheet"/>
-		<link href="${url.resourcesPath}/custom/header.css" rel="stylesheet"/>
-		<link href="${url.resourcesPath}/custom/footer.css" rel="stylesheet"/>
 	</head>
 
 	<body class="${properties.kcBodyClass!} login-page">
 
 		<header id="header" class="container-fluid text-center py-2 m-0">
-			<img src="${url.resourcesPath}/img/Clinical Informatics Research Group - purple.png"
+			<img src="${url.resourcesPath}/${properties.headerLogo}"
 			     alt="Clinical Informatics Research Group" class="img-fluid mx-auto d-block"
 			     style="max-height: 80px;">
 		</header>
