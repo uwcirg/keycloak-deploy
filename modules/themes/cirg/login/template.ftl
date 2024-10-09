@@ -16,14 +16,14 @@
 		<title>${msg("loginTitle",(realm.displayName!''))}</title>
 		<link rel="icon" href="${url.resourcesPath}/img/favicon.ico"/>
 
-		<#if properties.styles?has_content>
-			<#list properties.styles?split(' ') as style>
+		<#if properties.stylesCommon?has_content>
+			<#list properties.stylesCommon?split(' ') as style>
 				<link href="${url.resourcesPath}/${style}" rel="stylesheet"/>
 			</#list>
 		</#if>
 
-		<#if properties.customStyles?has_content>
-			<#list properties.customStyles?split(' ') as style>
+		<#if properties.styles?has_content>
+			<#list properties.styles?split(' ') as style>
 				<link href="${url.resourcesPath}/${style}" rel="stylesheet"/>
 			</#list>
 		</#if>
@@ -49,13 +49,12 @@
 			     style="max-height: 80px;">
 		</header>
 
-		<div class="kc-login-form container-fluid p-0">
+		<main class="kc-login-form container-fluid p-0">
 			<div class="${properties.kcFormCardClass!}">
 				<header class="${properties.kcFormHeaderClass!} kc-header-form">
 					<div class="text-center">
 						<img src="${url.resourcesPath}/img/Signature_Center_Purple_Hex.png"
-						     alt="UW Signature Logo" class="img-fluid mx-auto d-block"
-						     style="max-width: 300px;">
+						     alt="UW Signature Logo" class="img-fluid mx-auto d-block">
 					</div>
 		                    <#if realm.internationalizationEnabled && locale.supported?size gt 1>
 					    <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
@@ -177,7 +176,7 @@
 				</div>
 
 			</div>
-		</div>
+		</main>
 	</body>
 </html>
 </#macro>

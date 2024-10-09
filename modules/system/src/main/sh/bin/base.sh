@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export KEYCLOAK_START_CMD="/opt/keycloak/bin/kc.sh"
+export KEYCLOAK_START_CMD="/opt/keycloak/bin/kc.sh $KEYCLOAK_START_OPTIONS"
 export EXPORT_USERS_SCRIPT="/opt/keycloak/sbin/export.sh"
 export IMPORT_USERS_SCRIPT="/opt/keycloak/sbin/import.sh"
 export KCADMIN="/opt/keycloak/bin/kcadm.sh"

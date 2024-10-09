@@ -4,22 +4,21 @@
 @import "./header.css";
 @import "./footer.css";
 
-.login-page {
+.login-page, .welcome-page {
 	background: url("../img/overlay.png"), url("../img/cherry.jpg");
 	background-size: 256px 256px, cover;
 	background-attachment: fixed, fixed;
-	background-position: top left, bottom center;
+	background-position: top left, center;
 	background-repeat: repeat, no-repeat;
 	height: 100%;
-	color: #fff;
 }
 
 .kc-login-form {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: calc(100vh - var(--header-height));
 	color: black;
+}
+
+.kc-login-form > .card {
+	overflow: hidden;
 }
 
 .kc-login-form .kc-header-form {
@@ -36,6 +35,11 @@
 	padding: 1.5rem !important;
 }
 
+@media (min-width: 350px) {
+	.kc-login-form .card-header img {
+		max-width: 300px;
+	}
+}
 @media (min-width: 1200px) {
 	.kc-login-form > .card {
 		min-width: 600px;
@@ -46,3 +50,15 @@
 	color: #fff !important;
 }
 
+main {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: calc(100vh - var(--header-height));
+}
+
+@media (min-width: 1200px) {
+	main {
+		max-width: 1200px;
+	}
+}

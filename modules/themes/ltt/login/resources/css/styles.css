@@ -199,7 +199,7 @@ input[type="password"] {
 }
 input[type="submit"] {
   background-image: none;
-  background-color: var(--button-primary-color);
+  background-color: var(--primary-color);
   padding: 16px;
   width: 100%;
   font-size: var(--default-body-font-size);
