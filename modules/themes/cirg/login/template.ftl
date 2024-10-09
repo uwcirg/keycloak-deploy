@@ -41,7 +41,7 @@
 		</#if>
 	</head>
 
-	<body class="${properties.kcBodyClass!} login-page">
+	<body class="${properties.kcBodyClass!} login-page cherry-page">
 
 		<header id="header" class="container-fluid text-center py-2 m-0">
 			<img src="${url.resourcesPath}/${properties.headerLogo}"

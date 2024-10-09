@@ -40,7 +40,7 @@
     </#if>
 </head>
 
-<body class="${properties.kcBodyClass!}">
+<body class="${properties.kcBodyClass!} cherry-page">
 <header id="header" class="container-fluid text-center py-2 m-0">
 	<img src="${resourcesPath}/${properties.headerLogo}"
 	     alt="Clinical Informatics Research Group" class="img-fluid mx-auto d-block"
